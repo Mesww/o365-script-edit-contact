@@ -90,7 +90,7 @@ catch {
 
 $Skip_creation = $false
 # ขอการยืนยันจากผู้ใช้ก่อนสร้าง Contact ใหม่
-$Is_skip_confirmation = Read-Host "Do you want to skip creating new contacts? (Y/N) Default(N) "
+$Is_skip_confirmation = Read-Host "Do you want to skip confirm creating new contacts? (Y/N) Default(N) "
 $Skip_creation = $Is_skip_confirmation -ne "Y" -and $Is_skip_confirmation -ne "y"
 if (!$Skip_creation) {
     Write-Log "User chose to skip creating new contacts."
@@ -110,9 +110,9 @@ foreach ($Row in $Contacts) {
             Write-Log "Contact found: $Email. Updating..."
             
             # 1. Update ข้อมูล Mail (Set-User) - Skip if DisplayName is empty
-            if (![string]::IsNullOrWhiteSpace($Name)) {
-                Set-User -Identity $Email -DisplayName $Name -Confirm:$Skip_creation -ErrorAction Stop
-            }
+            # if (![string]::IsNullOrWhiteSpace($Name)) {
+            #     Set-User -Identity $Email -DisplayName $Name -Confirm:$Skip_creation -ErrorAction Stop
+            # }
             
             # 2. Update ข้อมูลทั่วไป (Set-Contact) - Skip empty values
             $updateParams = @{
@@ -127,7 +127,9 @@ foreach ($Row in $Contacts) {
             if (![string]::IsNullOrWhiteSpace($Row.Office)) { $updateParams.Office = $Row.Office } else { Write-Log "Office is empty, skipping update for this field." "WARNING" }
             if (![string]::IsNullOrWhiteSpace($Row.Department)) { $updateParams.Department = $Row.Department } else { Write-Log "Department is empty, skipping update for this field." "WARNING" }
             if (![string]::IsNullOrWhiteSpace($Row."Job title")) { $updateParams.Title = $Row."Job title" } else { Write-Log "Job title is empty, skipping update for this field." "WARNING" }
+            if (![string]::IsNullOrWhiteSpace($Row.Notes)) { $updateParams.Notes = $Row.Notes } else { Write-Log "Notes is empty, skipping update for this field." "WARNING" }
             
+
             Set-User @updateParams
 
             Write-Log "SUCCESS: Updated contact '$Name' ($Email)"
